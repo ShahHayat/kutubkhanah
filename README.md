@@ -83,8 +83,8 @@ $ task --version
 
 ```shell
 # Clone the repository: 
-$ git clone https://github.com/sivaprasadreddy/spring-boot-microservices-course.git
-$ cd spring-boot-microservices-course
+$ git clone https://github.com/shahhayat/kutubkhanah.git
+$ cd kutubkhanah
 ```
 
 #### Option 1: Start the infra components using Docker Compose and run microservices from IDE
