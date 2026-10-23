@@ -4,17 +4,19 @@ on:
   push:
     paths:
       - backend-catalog-service/**
+      - .github/workflows/backend-catalog-service.yml
     branches:
-      - 'main'
+      - 'master'
+  workflow_dispatch:
 #  pull_request:
-#    branches: [main]
+#    branches: [master]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     env:
-      working-directory: ./catalog-service
+      working-directory: ./backend-catalog-service
       DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/bookstore-catalog-service
     defaults:
       run:
@@ -23,10 +25,10 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
-          java-version: '25'
-          distribution: 'GraalVM CE'
+          java-version: '21'
+          distribution: 'graalvm'
           cache: 'maven'
 
       - name: Make Maven wrapper executable
@@ -35,16 +37,16 @@ jobs:
       - name: Build with Maven
         run: ./mvnw -ntp verify
 
-      - if: ${{ github.ref == 'refs/heads/main' }}
+      - if: ${{ github.ref == 'refs/heads/master' }}
         name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - if: ${{ github.ref == 'refs/heads/main' }}
+      - if: ${{ github.ref == 'refs/heads/master' }}
         name: Build and Publish Docker Image
         run: |
-          ./mvnw spring-boot:build-image -DskipTests
+          ./mvnw -ntp spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName="$DOCKER_IMAGE_NAME"
           echo "Pushing the image $DOCKER_IMAGE_NAME to Docker Hub..."
-          docker push $DOCKER_IMAGE_NAME
+          docker push "$DOCKER_IMAGE_NAME"
