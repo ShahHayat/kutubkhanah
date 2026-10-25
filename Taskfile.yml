@@ -23,7 +23,7 @@ tasks:
 
   build:
     cmds:
-      - "{{.MVNW}} -pl backend-catalog-service spring-boot:build-image -DskipTests"
+      - "{{.MVNW}} -pl backend-catalog-service,backend-order-service spring-boot:build-image -DskipTests"
 
   start_infra:
     cmds:

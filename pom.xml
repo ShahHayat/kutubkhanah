@@ -22,6 +22,7 @@
 
     <modules>
         <module>backend-catalog-service</module>
+        <module>backend-order-service</module>
     </modules>
 
     <build>

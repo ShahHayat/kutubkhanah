@@ -14,12 +14,15 @@ We will build a BookStore application using Spring Boot, Spring Cloud, and Docke
 | ------------------------------- | -------------------------- |
 | Java                            | 21 (GraalVM CE 21.0.2)     |
 | Maven                           | 3.9.16 (via Maven Wrapper) |
-| Spring Boot                     | 4.1.1                      |
-| Spring Framework                | 7.0.9                      |
-| Spring Data JPA                 | 4.1.1                      |
-| Hibernate ORM                   | 7.4.5                      |
+| Spring Boot                     | 4.1.2                      |
+| Spring Cloud                    | 2025.1.4                   |
+| Spring Framework                | 7.0.10                     |
+| Spring Data JPA                 | 4.1.2                      |
+| Hibernate ORM                   | 7.4.13                     |
 | Flyway                          | 12.4.0                     |
 | PostgreSQL                      | 18.1                       |
+| RabbitMQ                        | 4.2.3                      |
+| Resilience4j                    | 2.3.0                      |
 | springdoc-openapi               | 3.1.1                      |
 | Testcontainers                  | 2.0.5                      |
 | JUnit Jupiter                   | 6.0.3                      |
@@ -34,12 +37,12 @@ We will build a BookStore application using Spring Boot, Spring Cloud, and Docke
 
     **TechStack:** Spring Boot, Spring Data JPA, Flyway, PostgreSQL
 
-The following modules are planned and not implemented yet:
-
-- **order-service**:
+- **backend-order-service** (in progress):
   This service provides the REST API for managing orders and publishes order events to the message broker.
 
-    **TechStack:** Spring Boot, Spring Security OAuth2, Keycloak, Spring Data JPA, PostgreSQL, RabbitMQ
+    **TechStack:** Spring Boot, Spring Data JPA, Flyway, PostgreSQL, RabbitMQ, Resilience4j
+
+The following modules are planned and not implemented yet:
 
 - **notification-service**:
   This service listens to the order events and sends notifications to the users.
@@ -111,26 +114,28 @@ $ cd kutubkhanah
 
 #### Option 1: Start the infra components using Docker Compose and run microservices from IDE
 
-1. **Start the required services (PostgreSQL):** `$ task start_infra`
+1. **Start the required services (PostgreSQL, RabbitMQ):** `$ task start_infra`
 
-2. **Start the catalog service:**
-   Run the main entrypoint class `BackendCatalogServiceApplication` from your IDE.
+2. **Start the services:**
+   Run the main entrypoint classes `BackendCatalogServiceApplication` and `BackendOrderServiceApplication` from your IDE.
 
-3. **Access the application** at http://localhost:8081
+3. **Access the services** at http://localhost:8081 (catalog) and http://localhost:8082 (orders)
 
 - Catalog Service PostgreSQL DB: `jdbc:postgresql://localhost:15432/kutubkhanah` with credentials `postgres/postgres`
+- Order Service PostgreSQL DB: `jdbc:postgresql://localhost:25432/kutubkhanah` with credentials `postgres/postgres`
+- RabbitMQ: http://localhost:15672 with credentials `guest/guest`
 
 #### Option 2: Working on individual microservices
 
-Each microservice has Testcontainers based configuration to start the required services such as PostgreSQL automatically.
+Each microservice has Testcontainers based configuration to start the required services such as PostgreSQL and RabbitMQ automatically.
 
-You can start the catalog service by running its Test main entrypoint class `TestBackendCatalogServiceApplication` from your IDE.
+You can start a service by running its Test main entrypoint class from your IDE: `TestBackendCatalogServiceApplication`, `TestBackendOrderServiceApplication`.
 
 #### Option 3: Run all the infra components and applications using Docker Compose
 
 1. **Start all:** `$ task start`
 
-2. **Access the application** at http://localhost:8081
+2. **Access the services** at http://localhost:8081 (catalog) and http://localhost:8082 (orders)
 
 3. **Stop all:** `$ task stop`
 
