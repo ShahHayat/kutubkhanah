@@ -1,19 +1,19 @@
 package com.hayat.backend_catalog_service.web.controllers;
 
-import com.hayat.backend_catalog_service.domain.Product;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.context.jdbc.Sql;
-
-import java.math.BigDecimal;
-
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import com.hayat.backend_catalog_service.AbstractIT;
+import com.hayat.backend_catalog_service.domain.Product;
+import io.restassured.http.ContentType;
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.context.jdbc.Sql;
+
 @Sql("/test-data.sql")
-public class ProductControllerTest {
+public class ProductControllerTest extends AbstractIT {
 
     @Test
     void shouldReturnProducts() {

@@ -32,7 +32,7 @@
 		<rest-assured.version>6.1.0</rest-assured.version>
 		<spotless-maven-plugin.version>3.10.4</spotless-maven-plugin.version>
 		<palantir-java-format.version>2.102.0</palantir-java-format.version>
-		<dockerImageName>shahhayat/kutubkhanah-${project.artifactId}</dockerImageName>
+		<dockerImageName>shahhayat/${project.artifactId}</dockerImageName>
 	</properties>
 	<dependencies>
 		<dependency>

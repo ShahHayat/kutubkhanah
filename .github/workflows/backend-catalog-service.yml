@@ -6,7 +6,7 @@ on:
       - backend-catalog-service/**
       - .github/workflows/backend-catalog-service.yml
     branches:
-      - 'master'
+      - "master"
   workflow_dispatch:
 #  pull_request:
 #    branches: [master]
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend-catalog-service
-      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/bookstore-catalog-service
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/backend-catalog-service
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
@@ -27,9 +27,9 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v6
         with:
-          java-version: '21'
-          distribution: 'graalvm'
-          cache: 'maven'
+          java-version: "21"
+          distribution: "graalvm"
+          cache: "maven"
 
       - name: Make Maven wrapper executable
         run: chmod +x mvnw
