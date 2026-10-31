@@ -19,7 +19,7 @@ public class ProductControllerTest extends AbstractIT {
     void shouldReturnProducts() {
         given().contentType(ContentType.JSON)
                 .when()
-                .get("/api/products")
+                .get("/api/product")
                 .then()
                 .statusCode(200)
                 .body("data", hasSize(10))
@@ -36,7 +36,7 @@ public class ProductControllerTest extends AbstractIT {
     void shouldGetProductByCode() {
         Product product = given().contentType(ContentType.JSON)
                 .when()
-                .get("/api/products/{code}", "P100")
+                .get("/api/product/{code}", "P100")
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -55,7 +55,7 @@ public class ProductControllerTest extends AbstractIT {
         String code = "invalid_product_code";
         given().contentType(ContentType.JSON)
                 .when()
-                .get("/api/products/{code}", code)
+                .get("/api/product/{code}", code)
                 .then()
                 .statusCode(404)
                 .body("status", is(404))
