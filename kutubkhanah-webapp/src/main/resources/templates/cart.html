@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Cart &amp; checkout</title>
+</head>
+<body>
+<div layout:fragment="content" x-data="checkout(KK_PAGE)">
+    <div class="kk-container kk-checkout">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px 24px; align-items:center">
+            <a class="kk-link kk-link--muted" href="/products">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+                Keep browsing
+            </a>
+            <div class="kk-secure" th:if="${currentUser != null}">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A86A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+                Secure checkout · signed in as <span th:text="${currentUser.name}" style="color:#EFE3C8">you</span>
+            </div>
+        </div>
+        <h1 class="kk-display kk-display--l kk-checkout__title">Almost <em class="kk-em">yours.</em></h1>
+
+        <div class="kk-checkout__layout">
+            <form class="kk-form" aria-label="Delivery details" x-on:submit.prevent="placeOrder()" novalidate>
+                <fieldset>
+                    <legend><span class="kk-step__num">01</span><span class="kk-legend">Who is it for?</span></legend>
+                    <div class="kk-fields">
+                        <template x-for="f in fields.contact" x-bind:key="f.k">
+                            <div class="kk-field" x-bind:class="f.cls">
+                                <label class="kk-label kk-label--2" x-bind:for="'kk-' + f.k" x-text="f.label"></label>
+                                <input class="kk-input" x-bind:id="'kk-' + f.k" x-bind:type="f.type" x-bind:autocomplete="f.ac" x-model="v[f.k]" x-on:blur="touch(f.k)" x-bind:aria-invalid="showError(f.k) ? 'true' : 'false'"/>
+                                <div class="kk-err" x-show="showError(f.k)" x-cloak>
+                                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5v.01"/></svg>
+                                    <span x-text="errorFor(f.k)"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend><span class="kk-step__num">02</span><span class="kk-legend">Where should it go?</span></legend>
+                    <div class="kk-fields">
+                        <template x-for="f in fields.address" x-bind:key="f.k">
+                            <div class="kk-field" x-bind:class="f.cls">
+                                <label class="kk-label kk-label--2" x-bind:for="'kk-' + f.k" x-text="f.label"></label>
+                                <input class="kk-input" type="text" x-bind:id="'kk-' + f.k" x-bind:autocomplete="f.ac" x-bind:placeholder="f.ph || ''" x-model="v[f.k]" x-on:blur="touch(f.k)" x-bind:aria-invalid="showError(f.k) ? 'true' : 'false'"/>
+                                <div class="kk-err" x-show="showError(f.k)" x-cloak>
+                                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5v.01"/></svg>
+                                    <span x-text="errorFor(f.k)"></span>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="kk-field kk-field--third">
+                            <label class="kk-label kk-label--2" for="kk-country">Country</label>
+                            <div class="kk-select-wrap">
+                                <select class="kk-select" id="kk-country" autocomplete="country-name" x-model="v.country">
+                                    <template x-for="c in countries" x-bind:key="c"><option x-bind:value="c" x-text="c"></option></template>
+                                </select>
+                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B3A587" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset style="gap:12px">
+                    <legend><span class="kk-step__num kk-step__num--todo">03</span><span class="kk-legend">Anything we should know?</span><span class="kk-label">Optional</span></legend>
+                    <label class="kk-label kk-label--2" for="kk-comments">Note for the shop</label>
+                    <textarea class="kk-textarea" id="kk-comments" rows="3" x-model="comments" placeholder="A gate code, a gift message, a good time to deliver…"></textarea>
+                </fieldset>
+            </form>
+
+            <aside class="kk-summary" aria-labelledby="kk-sum-title">
+                <div class="kk-summary__head">
+                    <h2 id="kk-sum-title">Your cart</h2>
+                    <div class="kk-label" x-text="cart.count + (cart.count === 1 ? ' book' : ' books')"></div>
+                </div>
+                <div class="kk-summary__empty" x-show="cart.count === 0" x-cloak>
+                    <p class="kk-muted">Your cart is empty.</p>
+                    <a class="kk-link" href="/products">Browse the catalog</a>
+                </div>
+                <ul class="kk-lines">
+                    <template x-for="l in lines" x-bind:key="l.code">
+                        <li class="kk-line">
+                            <div class="kk-line__cover" x-html="cover(l)"></div>
+                            <div class="kk-line__body">
+                                <div class="kk-line__top">
+                                    <a class="kk-line__title" style="text-decoration:none" x-bind:href="'/products/' + l.code" x-text="l.title"></a>
+                                    <div class="kk-price" style="white-space:nowrap" x-text="fmt(l.price * l.quantity)"></div>
+                                </div>
+                                <div class="kk-line__sub" x-text="'N° ' + l.code + ' · ' + fmt(l.price) + ' each'"></div>
+                                <div class="kk-line__ctl">
+                                    <div class="kk-stepper kk-stepper--sm" role="group" x-bind:aria-label="'Quantity of ' + l.title">
+                                        <button type="button" x-on:click="dec(l.code)" aria-label="Decrease quantity"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+                                        <output aria-live="polite" x-text="l.quantity"></output>
+                                        <button type="button" x-on:click="inc(l.code)" aria-label="Increase quantity"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
+                                    </div>
+                                    <button class="kk-link kk-link--underline" type="button" x-on:click="remove(l.code)">Remove</button>
+                                </div>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+                <dl class="kk-totals" x-show="cart.count > 0">
+                    <div><dt>Items</dt><dd x-text="fmt(cart.total)"></dd></div>
+                    <div class="kk-totals__grand"><dt class="kk-label kk-label--2">Order total</dt><dd x-text="fmt(cart.total)"></dd></div>
+                </dl>
+                <div class="kk-summary__foot">
+                    <template x-if="!authenticated">
+                        <a class="kk-btn kk-btn--lg" x-bind:href="loginUrl" x-bind:class="{ 'kk-btn--disabled': cart.count === 0 }">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5"/></svg>
+                            Sign in to place your order
+                        </a>
+                    </template>
+                    <template x-if="authenticated">
+                        <button class="kk-btn kk-btn--lg" type="button" x-on:click="placeOrder()" x-bind:disabled="!canPlace">
+                            <span x-text="placing ? 'Placing your order…' : 'Place order'"></span>
+                            <svg x-show="!placing" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+                        </button>
+                    </template>
+                    <div role="status" class="kk-err" x-show="authenticated && !canPlace && !placing && blockReason" x-text="blockReason"></div>
+                    <div role="alert" class="kk-err" x-show="serverError" x-text="serverError"></div>
+                    <div class="kk-note">
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A86A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5"/><path d="M4 7l8 6 8-6"/></svg>
+                        <span>We’ll email <strong x-text="emailShown"></strong> as soon as your order is accepted, and again whenever its status changes.</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<div layout:fragment="pageScripts">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const KK_PAGE = {
+            authenticated: /*[[${currentUser != null}]]*/ false,
+            loginUrl: '/oauth2/authorization/kutubkhanah-webapp',
+            user: { name: /*[[${currentUser != null ? currentUser.name : ''}]]*/ '', email: /*[[${currentUser != null ? currentUser.email : ''}]]*/ '' }
+        };
+        /*]]>*/
+    </script>
+    <script src="/js/cart.js"></script>
+</div>
+</body>
+</html>

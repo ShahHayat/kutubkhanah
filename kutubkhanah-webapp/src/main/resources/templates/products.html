@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Catalog</title>
+</head>
+<body>
+<div layout:fragment="content" x-data="catalog(KK_PAGE)">
+
+    <section class="kk-pagehead kk-grid-bg" aria-labelledby="kk-cat-title">
+        <div class="kk-pagehead__glow" aria-hidden="true"></div>
+        <div class="kk-container kk-pagehead__inner">
+            <div class="kk-pagehead__copy">
+                <nav class="kk-crumbs" aria-label="Breadcrumb">
+                    <a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Catalog</span>
+                </nav>
+                <h1 id="kk-cat-title" class="kk-display kk-pagehead--display">The <em class="kk-em">Catalog</em></h1>
+                <p class="kk-pagehead__lede">Every title on our shelves, ready to send. Search by name or code.</p>
+            </div>
+            <div class="kk-pagehead__side">
+                <div class="kk-pagehead__urdu" lang="ur">فہرستِ کتب</div>
+                <div class="kk-eyebrow" style="letter-spacing:.26em" x-text="totalLabel"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="kk-container" aria-label="Books" style="padding-top:32px; padding-bottom:40px">
+        <div class="kk-toolbar">
+            <div class="kk-search kk-search--lg" role="search">
+                <label for="kk-cq" class="sr-only">Search the catalog</label>
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#958871" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+                <input id="kk-cq" type="search" x-model.debounce.150ms="q" placeholder="Title or code — try P107"/>
+            </div>
+            <div class="kk-chips" role="group" aria-label="Price">
+                <template x-for="b in bands" x-bind:key="b.id">
+                    <button class="kk-chip" type="button" x-text="b.label" x-bind:aria-pressed="band === b.id ? 'true' : 'false'" x-on:click="band = b.id"></button>
+                </template>
+            </div>
+            <div class="kk-sort">
+                <span id="kk-sort-l" class="kk-label">Sort</span>
+                <div class="kk-seg" role="group" aria-labelledby="kk-sort-l">
+                    <template x-for="s in sorts" x-bind:key="s.id">
+                        <button type="button" x-text="s.label" x-bind:aria-pressed="sort === s.id ? 'true' : 'false'" x-on:click="sort = s.id"></button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <div class="kk-range">
+            <div aria-live="polite" x-text="rangeLabel"></div>
+            <div x-text="'Page ' + current + ' of ' + totalPages"></div>
+        </div>
+
+        <div class="kk-alert" x-show="error" x-cloak role="alert">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EA8A6E" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5v.01"/></svg>
+            <span x-text="error"></span>
+        </div>
+
+        <div class="kk-grid kk-grid--catalog" x-show="loading">
+            <template x-for="i in 10" x-bind:key="i">
+                <div class="kk-card"><div class="kk-skel kk-skel--cover"></div><div class="kk-skel kk-skel--line"></div><div class="kk-skel kk-skel--line short"></div></div>
+            </template>
+        </div>
+
+        <div class="kk-empty" x-show="!loading && !error && filtered.length === 0" x-cloak>
+            <div class="kk-empty__mark" aria-hidden="true"></div>
+            <div class="kk-empty__title">Nothing on the shelf matches “<span x-text="q"></span>”.</div>
+            <p>Try a shorter word, or a code like P104.</p>
+            <button class="kk-ghost kk-ghost--md" type="button" x-on:click="clear()">Clear search and filters</button>
+        </div>
+
+        <div class="kk-grid kk-grid--catalog" x-show="!loading">
+            <template x-for="b in items" x-bind:key="b.code">
+                <article class="kk-card">
+                    <a class="kk-card__link" x-bind:href="'/products/' + b.code" x-bind:aria-label="b.title + ', details'">
+                        <div class="kk-lift" x-html="cover(b)"></div>
+                    </a>
+                    <div>
+                        <div class="kk-card__meta"><span x-text="'N° ' + b.code"></span><span class="kk-price" x-text="fmt(b.price)"></span></div>
+                        <h2 class="kk-card__title" x-text="b.title"></h2>
+                        <div class="kk-card__author" x-text="b.author"></div>
+                    </div>
+                    <button x-show="!inCart(b.code)" class="kk-pill-btn" type="button" style="align-self:flex-start" x-on:click="add(b)" x-bind:aria-label="'Add ' + b.title + ' to cart'">
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                        Add to cart
+                    </button>
+                    <a x-show="inCart(b.code)" x-cloak class="kk-pill-btn kk-pill-btn--on" style="align-self:flex-start" href="/cart">
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                        In cart
+                    </a>
+                </article>
+            </template>
+        </div>
+
+        <nav class="kk-pager" aria-label="Pages" x-show="totalPages > 1" x-cloak>
+            <button class="kk-ghost kk-ghost--md" type="button" x-on:click="go(current - 1)" x-bind:disabled="current <= 1">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+                Previous
+            </button>
+            <div class="kk-pager__nums">
+                <template x-for="p in pages" x-bind:key="p">
+                    <button class="kk-pager__num" type="button" x-text="p" x-on:click="go(p)" x-bind:aria-label="'Page ' + p" x-bind:aria-current="p === current ? 'page' : null"></button>
+                </template>
+            </div>
+            <button class="kk-ghost kk-ghost--md" type="button" x-on:click="go(current + 1)" x-bind:disabled="current >= totalPages">
+                Next
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </button>
+        </nav>
+    </section>
+</div>
+
+<div layout:fragment="pageScripts">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const KK_PAGE = { q: /*[[${query}]]*/ '', page: /*[[${pageNo}]]*/ 1 };
+        /*]]>*/
+    </script>
+    <script src="/js/products.js"></script>
+</div>
+</body>
+</html>

@@ -25,6 +25,7 @@
         <module>backend-catalog-service</module>
         <module>backend-notification-service</module>
         <module>backend-order-service</module>
+        <module>kutubkhanah-webapp</module>
     </modules>
 
     <build>

@@ -72,8 +72,8 @@ public abstract class AbstractIT {
         map.put(OAuth2Constants.USERNAME, singletonList(USERNAME));
         map.put(OAuth2Constants.PASSWORD, singletonList(PASSWORD));
 
-        String authServerUrl = oAuth2ResourceServerProperties.getJwt().getIssuerUri()
-                + "/protocol/openid-connect/token";
+        String authServerUrl =
+                oAuth2ResourceServerProperties.getJwt().getIssuerUri() + "/protocol/openid-connect/token";
 
         var request = new HttpEntity<>(map, httpHeaders);
         KeyCloakToken token = restTemplate.postForObject(authServerUrl, request, KeyCloakToken.class);
@@ -82,6 +82,5 @@ public abstract class AbstractIT {
         return token.accessToken();
     }
 
-    record KeyCloakToken(@JsonProperty("access_token") String accessToken) {
-    }
+    record KeyCloakToken(@JsonProperty("access_token") String accessToken) {}
 }

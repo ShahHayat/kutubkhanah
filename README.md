@@ -54,10 +54,10 @@ The following modules are planned and not implemented yet:
 
     **TechStack:** Spring Boot, Spring Cloud Gateway
 
-- **bookstore-webapp**:
-  This is the customer-facing web application where customers can browse the catalog, place orders, and view their order details.
+- **kutubkhanah-webapp** (in progress):
+  This is the customer-facing storefront where customers browse the catalog, place orders, and follow their orders. Runs on http://localhost:8080 and talks to the backend through the API gateway.
 
-    **TechStack:** Spring Boot, Spring Security OAuth2, Keycloak, Thymeleaf, Alpine.js, Bootstrap
+    **TechStack:** Spring Boot, Spring Security OAuth2 (Keycloak, pending), Thymeleaf, Alpine.js, Three.js
 
 ## Learning Objectives
 

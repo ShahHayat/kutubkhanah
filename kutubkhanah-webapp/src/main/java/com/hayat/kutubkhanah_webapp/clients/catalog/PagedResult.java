@@ -1,0 +1,16 @@
+package com.hayat.kutubkhanah_webapp.clients.catalog;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record PagedResult<T>(
+        List<T> data,
+        long totalElements,
+        int pageNumber,
+        int totalPages,
+        @JsonProperty("isFirst") boolean isFirst,
+        @JsonProperty("isLast") boolean isLast,
+        @JsonProperty("hasNext") boolean hasNext,
+        @JsonProperty("hasPrevious") boolean hasPrevious) {}

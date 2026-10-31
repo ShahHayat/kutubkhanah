@@ -1,0 +1,26 @@
+package com.hayat.kutubkhanah_webapp.clients.orders;
+
+import java.util.List;
+import java.util.Map;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.PostExchange;
+
+/**
+ * Calls the order service through the API gateway.
+ * The paths mirror the gateway route ({@code /order/**}) and the order controller ({@code /api/order}).
+ */
+public interface OrderServiceClient {
+
+    @PostExchange("/order/api/order")
+    CreateOrderResponse createOrder(
+            @RequestHeader Map<String, ?> headers, @RequestBody CreateOrderRequest orderRequest);
+
+    @GetExchange("/order/api/order")
+    List<OrderSummary> getOrders(@RequestHeader Map<String, ?> headers);
+
+    @GetExchange("/order/api/order/{orderNumber}")
+    OrderDTO getOrder(@RequestHeader Map<String, ?> headers, @PathVariable String orderNumber);
+}

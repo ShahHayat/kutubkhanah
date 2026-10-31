@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Something went wrong</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="kk-container kk-errorpage">
+        <div class="kk-eyebrow" th:text="${status != null ? 'Error ' + status : 'Error'}">Error</div>
+        <h1 class="kk-display kk-display--l">
+            <th:block th:if="${status == 404}">This page isn’t <em class="kk-em">on our shelves.</em></th:block>
+            <th:block th:unless="${status == 404}">Something <em class="kk-em">went wrong.</em></th:block>
+        </h1>
+        <p class="kk-hero__lede" th:text="${status == 404 ? 'The address may be wrong, or the page has moved. The catalog has everything we carry.' : 'We hit a snag while serving this page. Please try again in a moment.'}">…</p>
+        <div class="kk-hero__ctas">
+            <a class="kk-btn" href="/products">Browse the catalog</a>
+            <a class="kk-ghost" href="/">Back home</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

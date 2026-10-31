@@ -103,3 +103,25 @@ services:
                     memory: 700m
         labels:
             logging: "promtail"
+
+    kutubkhanah-webapp:
+        image: shahhayat/kutubkhanah-webapp
+        container_name: kutubkhanah-webapp
+        environment:
+            - SPRING_PROFILES_ACTIVE=docker
+            - KUTUBKHANAH_API_GATEWAY_URL=http://api-gateway:8989
+            - OAUTH2_SERVER_URL=http://keycloak:9191
+            - MANAGEMENT_TRACING_EXPORT_ENABLED=${MANAGEMENT_TRACING_EXPORT_ENABLED:-false}
+            - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
+        ports:
+            - "8080:8080"
+        restart: unless-stopped
+        depends_on:
+            api-gateway:
+                condition: service_started
+        deploy:
+            resources:
+                limits:
+                    memory: 700m
+        labels:
+            logging: "promtail"
