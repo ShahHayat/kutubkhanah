@@ -21,7 +21,9 @@
     </properties>
 
     <modules>
+        <module>api-gateway</module>
         <module>backend-catalog-service</module>
+        <module>backend-notification-service</module>
         <module>backend-order-service</module>
     </modules>
 

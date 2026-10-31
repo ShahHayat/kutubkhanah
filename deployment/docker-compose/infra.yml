@@ -42,6 +42,27 @@ services:
         limits:
           memory: 500m
 
+  notifications-db:
+    image: postgres:18.1
+    container_name: notifications-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=kutubkhanah
+    ports:
+      - "35432:5432"
+    volumes:
+      - notifications-db-data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
   rabbitmq:
     image: rabbitmq:4.2.3-management
     container_name: rabbitmq
@@ -61,6 +82,14 @@ services:
         limits:
           memory: 500m
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   catalog-db-data:
   orders-db-data:
+  notifications-db-data:
