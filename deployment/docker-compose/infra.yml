@@ -89,6 +89,23 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.0
+    command: [ 'start-dev', '--import-realm', '--http-port=9191' ]
+    container_name: keycloak
+    hostname: keycloak
+    volumes:
+      - ./realm-config:/opt/keycloak/data/import
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin1234
+    ports:
+      - "9191:9191"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
 volumes:
   catalog-db-data:
   orders-db-data:

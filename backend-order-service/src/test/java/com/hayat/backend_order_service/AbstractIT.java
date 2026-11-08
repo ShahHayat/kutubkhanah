@@ -29,8 +29,8 @@ import org.springframework.web.client.RestTemplate;
 public abstract class AbstractIT {
     static final String CLIENT_ID = "kutubkhanah-webapp";
     static final String CLIENT_SECRET = "P1sibsIrELBhmvK18BOzw1bUl96DcP2z";
-    static final String USERNAME = "siva";
-    static final String PASSWORD = "siva1234";
+    static final String USERNAME = "shahhayat";
+    static final String PASSWORD = "mammamamma";
 
     @Autowired
     OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
